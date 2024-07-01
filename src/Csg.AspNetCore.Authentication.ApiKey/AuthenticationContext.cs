@@ -17,5 +17,20 @@ namespace Csg.AspNetCore.Authentication.ApiKey
         public string ClientID { get; protected set; }
 
         public System.Security.Claims.ClaimsIdentity Identity { get; protected set; }
+
+        public void Success(AuthenticationTicket ticket)
+        {
+            this.Result = HandleRequestResult.Success(ticket);
+        }
+        
+        public void Fail(Exception exception)
+        {
+            this.Result = HandleRequestResult.Fail(exception);
+        }
+
+        public void Fail(string failureMesage)
+        {
+            this.Result = HandleRequestResult.Fail(failureMesage);
+        }
     }
 }

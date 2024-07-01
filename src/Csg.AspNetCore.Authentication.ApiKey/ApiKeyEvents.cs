@@ -10,6 +10,8 @@ namespace Csg.AspNetCore.Authentication.ApiKey
         public Func<RequestMessageContext, Task> OnRequestAsync { get; set; } = context => Task.CompletedTask;
 
         public Func<AuthenticatedEventContext, Task> OnAuthenticatedAsync { get; set; } = context => Task.CompletedTask;
+
+        public Func<AuthenticatedEventContext, Task> OnSuccessResultAsync { get; set; } = context => Task.CompletedTask;
     }
 
     //public class AuthenticatedContext : Microsoft.AspNetCore.Authentication.RemoteAuthenticationContext<ApiKeyOptions>

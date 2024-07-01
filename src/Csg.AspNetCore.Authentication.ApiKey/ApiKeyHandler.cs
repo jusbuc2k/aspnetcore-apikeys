@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -187,8 +189,17 @@ namespace Csg.AspNetCore.Authentication.ApiKey
             {
                 return userResult.Result;
             }
+
+            var ticket = new AuthenticationTicket(new System.Security.Claims.ClaimsPrincipal(userResult.Identity), this.Scheme.Name);
+
+            await this.Options.Events.OnAuthenticatedAsync(userResult);
             
-            return AuthenticateResult.Success(new AuthenticationTicket(new System.Security.Claims.ClaimsPrincipal(userResult.Identity), this.Scheme.Name));
+            if (userResult.Result != null)
+            {
+                return userResult.Result;
+            }
+
+            return AuthenticateResult.Success(ticket);
         }
 
         private async Task<AuthenticatedEventContext> CreateIdentityAsync(ApiKey key)
@@ -206,8 +217,6 @@ namespace Csg.AspNetCore.Authentication.ApiKey
 
             var identity = new System.Security.Claims.ClaimsIdentity(claims, this.Options.AuthenticationType);
             var eventContext = new AuthenticatedEventContext(this.Context, this.Scheme, this.Options, key.ClientID, identity);
-
-            await this.Options.Events.OnAuthenticatedAsync(eventContext);
 
             return eventContext;
         }
